@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Externer Webshop – Absprung</title>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <style>
+    html, body { font-family: Arial, sans-serif; padding: 16px; }
+  </style>
+</head>
+<body>
+  <div id="status">Absprung wird vorbereitet …</div>
+  <script>
+    (function () {
+      // 1) Sich beim Opener melden, damit dieser weiß: das Fenster ist bereit, Parameter zu empfangen
+      try {
+        if (window.opener && typeof window.opener.postMessage === "function") {
+          // nur an die gleiche Origin antworten
+          window.opener.postMessage({ type: "OCI_READY" }, window.location.origin);
+        }
+      } catch (e) {
+        console.warn("Konnte READY-Nachricht nicht senden:", e);
+      }
+
+      // 2) Auf Parameter warten
+      window.addEventListener("message", function (evt) {
+        try {
+          // nur Nachrichten vom gleichen Origin akzeptieren
+          if (evt.origin !== window.location.origin) { return; }
+          if (!evt.data || evt.data.type !== "OCI_POST" || !evt.data.payload) { return; }
+
+          var payload = evt.data.payload; // { action, method, fields[] }
+          if (!payload.action) {
+            document.getElementById("status").textContent =
+              "Fehlende Ziel-URL. Bitte Customizing prüfen.";
+            return;
+          }
+
+          var method = (payload.method || "POST").toUpperCase();
+
+          // Felder normalisieren: Name trim + case-sensitives Duplikat-Handling (letzter gewinnt)
+          var aFields = payload.fields || [];
+          var m = Object.create(null);
+          aFields.forEach(function (f) {
+            if (!f) { return; }
+            var n = (f.name === undefined || f.name === null) ? "" : String(f.name).trim();
+            if (!n) { return; }
+            m[n] = {
+              name: n,
+              value: (f.value === undefined || f.value === null) ? "" : String(f.value).replace(/\u0000/g, "").trim()
+            };
+          });
+          payload.fields = Object.keys(m).map(function (k) { return m[k]; });
+
+          var targetField = (payload.fields || []).find(function (f) {
+            return f && f.name && String(f.name).trim().toLowerCase() === "~target";
+          });
+          var target = targetField && targetField.value ? String(targetField.value).trim() : "_self";
+
+          // 3) Unsichtbares Formular bauen
+          var form = document.createElement("form");
+          form.method = method;
+          form.action = payload.action;
+          form.target = target;
+
+          (payload.fields || []).forEach(function (f) {
+            if (!f) { return; }
+
+            // name/value robust machen (trim + null-safe)
+            var name = (f.name === undefined || f.name === null) ? "" : String(f.name).trim();
+            if (!name) { return; }
+
+            var value = (f.value === undefined || f.value === null) ? "" : String(f.value);
+
+            // manche Customizing-Werte enthalten unsichtbare Steuerzeichen -> raus damit
+            value = value.replace(/\u0000/g, "").trim();
+
+            var input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+
+            form.appendChild(input);
+          });
+
+          console.log("OCI SUBMIT action:", payload.action);
+          console.log("OCI SUBMIT method:", method);
+          console.log("OCI SUBMIT target:", target);
+
+          // echte Form-Felder (so wie sie gleich gesendet werden)
+          var debug = [];
+          Array.prototype.forEach.call(form.elements, function (el) {
+            if (el && el.name) {
+              debug.push({ name: el.name, value: el.value });
+            }
+          });
+          console.table(debug);
+
+          // 4) Formular absenden
+          document.body.appendChild(form);
+          form.submit();
+
+          // Sicherheits-Fallback, falls der Katalog die Navigation blockt
+          setTimeout(function () {
+            if (!document.hidden) {
+              var a = document.createElement("a");
+              a.href = payload.action;
+              a.target = "_blank";
+              a.rel = "noopener";
+              a.textContent = payload.action;
+
+              var msg = document.createElement("p");
+              msg.textContent = "Redirect konnte nicht ausgeführt werden. Bitte Pop-ups erlauben oder Ziel-URL direkt öffnen:";
+
+              var container = document.createElement("div");
+              container.appendChild(msg);
+              container.appendChild(a);
+              document.body.innerHTML = "";
+              document.body.appendChild(container);
+            }
+          }, 1200);
+        } catch (e) {
+          console.error("Fehler beim Absprung:", e);
+          document.getElementById("status").textContent =
+            "Fehler beim Absprung. Details in der Konsole.";
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

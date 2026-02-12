@@ -1,0 +1,161 @@
+<mvc:View
+    controllerName="diehlwebshop.controller.Home"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    id="homeView"
+>
+    <Page
+        id="home"
+        title="{i18n>homeTitle}"
+    >
+        <landmarkInfo>
+            <PageAccessibleLandmarkInfo
+                id="region"
+                rootRole="Region"
+                rootLabel="{i18n>homeTitle} {i18n>Home_rootLabel}"
+                subHeaderRole="Search"
+                subHeaderLabel="{i18n>Home_subHeaderLabel}"
+                contentRole="Navigation"
+                contentLabel="{i18n>Home_contentLabel}"
+                headerRole="Region"
+                headerLabel="{i18n>Home_headerLabel}"
+            />
+        </landmarkInfo>
+
+        <headerContent>
+            <Button
+                id="buttonHome"
+                icon="sap-icon://home"
+                press=".onBack"
+                visible="{appView>/smallScreenMode}"
+            />
+        </headerContent>
+
+        <subHeader>
+            <Toolbar id="searchBar33343">
+                <SearchField
+                    id="searchField"
+                    liveChange=".onSearch"
+                    placeholder="{i18n>homeSearchPlaceholder}"
+                    tooltip="{i18n>homeSearchTooltip}"
+                    width="100%"
+                />
+            </Toolbar>
+        </subHeader>
+
+        <!-- Neuer Aufbau: VBox mit SpaceBetween -->
+        <content>
+            <VBox
+                id="homeVBox1"
+                fitContainer="true"
+                justifyContent="SpaceBetween"
+                class="sapUiContentPadding"
+            >
+                <!-- Oberer Block mit Listen -->
+                <VBox id="productContentVBox">
+                    <List
+                        visible="false"
+                        id="productHomeList"
+                        mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
+                        selectionChange=".onProductListSelect"
+                        noDataText="{i18n>homeNoData}"
+                        busyIndicatorDelay="0"
+                        items="{
+                            path : '/ArtikelSet',
+                            sorter : {
+                                path : 'ZmmWebsArtikelId',
+                                descending : false
+                            }
+                        }"
+                    >
+                        <items>
+                            <ObjectListItem
+                                id="objectListItem"
+                                type="{= ${device>/system/phone} ? 'Active' : 'Active'}"
+                                icon="{
+    parts: [
+      {path: 'ZmmWebsArtikelId'}
+    ],
+    formatter: '.formatter.articleImage'   
+  }"
+                                title="{= ${ZmmWebsArtBez} || ${Artikelbezeichnung} }"
+                                number="{
+    parts: [
+      {path: 'Bapre'},        
+      {path: 'Waers'}         
+    ],
+    formatter: '.formatter.price'
+  }"
+                                numberUnit="{Waers}"
+                                press=".onProductListItemPress"
+                                iconDensityAware="false"
+                            >
+                                <attributes>
+                                    <ObjectAttribute
+                                        id="supplierName"
+                                        text="{= ${Wlief} || ${Lieferant} }"
+                                    />
+                                </attributes>
+                                <firstStatus>
+                                    <ObjectStatus
+                                        id="status"
+                                        text="{path : 'STATUS', formatter : '.formatter.statusText'}"
+                                        state="{path : 'STATUS', formatter : '.formatter.statusState'}"
+                                    />
+                                </firstStatus>
+                            </ObjectListItem>
+                        </items>
+                    </List>
+
+                    <OverflowToolbar id="catBreadcrumbBar">
+                        <Button
+                            id="btnCatUp"
+                            text="{i18n>Zurueck}"
+                            press=".onCategoryLevelUp"
+                            visible="{= ${catnav>/pathStack}.length > 0 }"
+                        />
+                        <ToolbarSpacer id="tspCatBreadcrumb" />
+                        <Text
+                            id="txtCatBreadcrumb"
+                            text="{catnav>/breadcrumbText}"
+                        />
+                    </OverflowToolbar>
+
+                    <List
+                        id="categoryHomeList"
+                        headerText="{i18n>homeCategoryListHeader}"
+                        mode="None"
+                        busyIndicatorDelay="0"
+                        items="{
+        path: '/KatalogSet',
+        parameters: { operationMode: 'Client' },
+        sorter: { path: 'ZmmWebsKatId', descending: false }
+    }"
+                    >
+                        <items>
+                            <StandardListItem
+                                id="categoryName"
+                                title="{ZmmWebsKatBez}"
+                                type="Active"
+                                counter="{ZmmWebsKatAnzahl}"
+                                press=".onCategoryListItemPress"
+                                tooltip="{i18n>openCategoryProducts} {ZmmWebsKatBez}"
+                            />
+                        </items>
+                    </List>
+
+                </VBox>
+
+                <!-- Button am unteren Rand -->
+                <Button
+                    id="freitextOpenDialogButton"
+                    text="{i18n>freitextOpenDialogButtonText}"
+                    press=".onOpenFreitextDialog"
+                    class="sapUiTinyMarginTop"
+                    visible="true"
+                />
+            </VBox>
+        </content>
+    </Page>
+</mvc:View>

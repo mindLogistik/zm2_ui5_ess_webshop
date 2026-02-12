@@ -1,0 +1,83 @@
+<core:FragmentDefinition
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+>
+  <Dialog
+    id="imageGalleryDialog"
+    title="{i18n>imageGalleryDialogTitle}"
+    draggable="true"
+    resizable="true"
+    stretch="{device>/system/phone}"
+    contentWidth="90vw"
+    contentHeight="90vh"
+    horizontalScrolling="false"
+    verticalScrolling="false"
+  >
+    <customHeader>
+      <Bar id="imageGalleryBar">
+        <contentLeft>
+          <Button
+            id="btnImageGalleryPrev"
+            icon="sap-icon://navigation-left-arrow"
+            type="Transparent"
+            press=".onPrevImage"
+          />
+        </contentLeft>
+
+        <contentMiddle>
+          <Title
+            id="ttlImageGallery"
+            text="{i18n>imageGalleryDialogTitle}"
+          />
+        </contentMiddle>
+
+        <contentRight>
+          <Button
+            id="btnImageGalleryNext"
+            icon="sap-icon://navigation-right-arrow"
+            type="Transparent"
+            press=".onNextImage"
+          />
+        </contentRight>
+      </Bar>
+    </customHeader>
+
+    <content>
+      <Carousel
+        id="imageGalleryCarousel"
+        pages="{productImages>/}"
+        loop="true"
+        showPageIndicator="true"
+        height="80vh"
+      >
+        <pages>
+          <VBox
+            id="vbImageGalleryPage"
+            width="100%"
+            height="100%"
+            justifyContent="Center"
+            alignItems="Center"
+          >
+            <Image
+              id="imgImageGallery"
+              src="{productImages>src}"
+              width="100%"
+              height="100%"
+              densityAware="false"
+            />
+          </VBox>
+        </pages>
+      </Carousel>
+    </content>
+
+    <beginButton>
+      <Button
+        id="btnImageGalleryClose"
+        text="{i18n>imageGalleryDialogClose}"
+        type="Transparent"
+        press=".onCloseImageGallery"
+      />
+    </beginButton>
+  </Dialog>
+</core:FragmentDefinition>
+
