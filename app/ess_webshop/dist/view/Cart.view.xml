@@ -1,0 +1,223 @@
+<mvc:View
+    controllerName="diehlwebshop.controller.Cart"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+>
+    <Page
+        id="cartPage"
+        title="{cfg>/pageTitle}"
+        backgroundDesign="Solid"
+        showNavButton="{appView>/smallScreenMode}"
+        navButtonPress=".onBack"
+        showFooter="true"
+    >
+        <landmarkInfo>
+            <PageAccessibleLandmarkInfo
+                id="headerCart"
+                rootRole="Region"
+                rootLabel="{i18n>Cart_rootLabel}"
+                contentRole="Main"
+                contentLabel="{i18n>Cart_contentLabel}"
+                footerRole="Region"
+                footerLabel="{i18n>Cart_footerLabel}"
+                headerRole="Region"
+                headerLabel="{i18n>Cart_headerLabel}"
+            />
+        </landmarkInfo>
+
+        <headerContent>
+            <Button
+                id="editButton"
+                icon="sap-icon://edit"
+                enabled="{
+                    parts: [
+                        {path: 'cartProducts>/cartEntries'},
+                        {path: 'cartProducts>/savedForLaterEntries'}
+                    ],
+                    formatter : '.formatter.hasItems'
+                }"
+                visible="{cfg>/notInDelete}"
+                press=".onEditOrDoneButtonPress"
+                tooltip="{i18n>cartEditButtonTooltip}"
+            />
+        </headerContent>
+
+        <footer>
+            <Toolbar id="toolbarCart">
+                <Text
+                    id="totalPriceText"
+                    text="{
+                        path : 'cartProducts>/cartEntries',
+                        formatter : '.formatter.totalPrice'
+                    }"
+                    class="sapUiTinyMarginBegin"
+                />
+                <ToolbarSpacer id="toolbarSpacerCart" />
+                <Button
+                    id="proceedButton"
+                    type="Accept"
+                    text="{i18n>cartProceedButtonText}"
+                    enabled="{
+                        path: 'cartProducts>/cartEntries',
+                        formatter: '.formatter.hasItems'
+                    }"
+                    visible="{cfg>/notInDelete}"
+                    press=".onProceedButtonPress"
+                />
+                <Button
+                    id="doneButton"
+                    text="{i18n>cartDoneButtonText}"
+                    enabled="true"
+                    visible="{cfg>/inDelete}"
+                    press=".onEditOrDoneButtonPress"
+                />
+            </Toolbar>
+        </footer>
+
+        <content>
+            <List
+                delete=".onCartEntriesDelete"
+                id="entryList"
+                items="{ path : 'cartProducts>/cartEntries' }"
+                mode="{cfg>/listMode}"
+                noDataText="{i18n>cartNoData}"
+                selectionChange=".onEntryListSelect"
+            >
+                <headerToolbar>
+                    <Toolbar id="toolbarLabelCart">
+                        <Title
+                            id="titleLabelCart"
+                            level="H6"
+                            text="{i18n>Cart_contentLabel}"
+                            titleStyle="H6"
+                        />
+                    </Toolbar>
+                </headerToolbar>
+
+                <items>
+                    <CustomListItem id="cartListItem">
+                        <HBox
+                            id="cartHBoxContainer"
+                            justifyContent="SpaceBetween"
+                            alignItems="Center"
+                            class="sapUiTinyMargin"
+                        >
+                            <HBox
+                                id="cartHBoxLeft"
+                                alignItems="Center"
+                            >
+                                <Image
+                                    id="cartProductImage"
+                                    src="{
+    parts: [
+      { path: 'cartProducts>ZmmWebsArtikelId' },
+      { path: 'cartProducts>ZmmWebsDocId' }
+    ],
+    formatter: '.formatter.categoryThumbIconFromDocId'
+  }"
+                                    width="3rem"
+                                    height="3rem"
+                                    densityAware="false"
+                                    class="sapUiTinyMarginEnd"
+                                />
+
+                                <VBox id="cartVBoxProductInfo">
+                                    <Text
+                                        id="cartProductName"
+                                        text="{cartProducts>ZmmWebsArtBez}"
+                                        wrapping="true"
+                                    />
+                                    <Text
+                                        id="cartProductSupplier"
+                                        text="{cartProducts>Wlief}"
+                                        visible="{= ${cartProducts>ZmmWebsKatId} !== 'FREETEXT' }"
+                                        wrapping="true"
+                                    />
+                                    <Link
+                                        id="cartSaveForLaterLink"
+                                        text="{i18n>cartSaveForLaterLinkText}"
+                                        press=".onSaveForLater"
+                                        wrapping="false"
+                                    />
+                                </VBox>
+                            </HBox>
+
+                            <VBox
+                                id="cartVBoxRight"
+                                alignItems="End"
+                            >
+                                <StepInput
+                                    id="cartStepInputQuantity"
+                                    width="6rem"
+                                    min="1"
+                                    step="1"
+                                    value="{ path: 'cartProducts>MENGE', type: 'sap.ui.model.type.Integer' }"
+                                    editable="{cfg>/notInDelete}"
+                                    change=".onQuantityLiveChange"
+                                />
+
+                                <ObjectNumber
+                                    id="cartProductPrice"
+                                    number="{ path : 'cartProducts>Bapre', formatter : '.formatter.price' }"
+                                    unit="{cartProducts>Waers}"
+                                />
+                            </VBox>
+                        </HBox>
+                    </CustomListItem>
+                </items>
+            </List>
+
+            <List
+                delete=".onSaveForLaterDelete"
+                id="saveForLaterList"
+                items="{
+                    path : 'cartProducts>/savedForLaterEntries',
+                    sorter : { path : 'ZmmWebsArtBez', descending : false }
+                }"
+                mode="{cfg>/listMode}"
+                noDataText="{i18n>cartNoItemsSavedForLater}"
+                selectionChange=".onEntryListSelect"
+            >
+                <headerToolbar>
+                    <Toolbar id="toolbarSavedForLaterCart">
+                        <Title
+                            id="titleSavedForLaterCart"
+                            level="H6"
+                            text="{i18n>cartItemsSavedForLater}"
+                            titleStyle="H6"
+                        />
+                    </Toolbar>
+                </headerToolbar>
+
+                <items>
+                    <ObjectListItem
+                        id="listItemProductsCart"
+                        intro="{cartProducts>MENGE} x"
+                        type="{cfg>/listItemType}"
+                        icon="{
+  parts: [
+    { path: 'cartProducts>ZmmWebsArtikelId' },
+    { path: 'cartProducts>ZmmWebsDocId' }
+  ],
+  formatter: '.formatter.categoryThumbIconFromDocId'
+}"
+                        title="{cartProducts>ZmmWebsArtBez}"
+                        number="{ path : 'cartProducts>Bapre', formatter : '.formatter.price' }"
+                        numberUnit="{cartProducts>Waers}"
+                        press=".onEntryListPress"
+                        iconDensityAware="false"
+                    >
+                        <attributes>
+                            <ObjectAttribute
+                                id="attributeAddToCart"
+                                active="true"
+                                press=".onAddBackToBasket"
+                                text="{i18n>cartAddToCartLinkText}"
+                            />
+                        </attributes>
+                    </ObjectListItem>
+                </items>
+            </List>
+        </content>
+    </Page>
+</mvc:View>

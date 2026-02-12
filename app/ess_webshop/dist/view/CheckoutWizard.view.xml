@@ -1,0 +1,771 @@
+<mvc:View
+    controllerName="diehlwebshop.controller.CheckoutWizard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:layout="sap.ui.layout"
+    xmlns:f="sap.f"
+    xmlns:u="sap.ui.unified"
+>
+    <Page
+        id="checkoutWizardPage"
+        title="{i18n>checkoutTitle}"
+        floatingFooter="true"
+    >
+        <headerContent>
+            <Button
+                id="returnToShopBtn"
+                text="{i18n>returnToShop}"
+                type="Transparent"
+                press=".onReturnToShop"
+            />
+        </headerContent>
+
+        <content>
+            <Wizard
+                id="checkoutWizard"
+                enableBranching="false"
+                showNextButton="false"
+            >
+                <!-- ======================================================
+                    STEP 1 – KOPF
+                ======================================================= -->
+                <WizardStep
+                    id="stepHead"
+                    title="{i18n>cw.step.head.title}"
+                    icon="sap-icon://activities"
+                >
+                    <VBox
+                        id="headBox"
+                        class="sapUiTinyMarginTop sapUiMediumMarginBeginEnd"
+                        width="100%"
+                    >
+                        <!-- Wareneingang erwartet / Dienstleistung -->
+                        <VBox id="headWe">
+                            <HBox
+                                id="boxWE"
+                                class="sapUiSmallMarginTop"
+                                wrap="NoWrap"
+                                alignItems="Center"
+                            >
+                                <Label
+                                    id="lvlHeadWe"
+                                    text="{i18n>cw.field.weOrService}"
+                                    required="true"
+                                />
+                                <Button
+                                    id="btnInfoWe"
+                                    type="Transparent"
+                                    icon="sap-icon://hint"
+                                    tooltip="{i18n>cw.info.tooltip}"
+                                    press=".onInfoPress"
+                                    class="sapUiTinyMarginBegin"
+                                >
+                                    <customData>
+                                        <core:CustomData
+                                            key="cwInfoKey"
+                                            value="we"
+                                        />
+                                    </customData>
+                                </Button>
+                            </HBox>
+
+                            <RadioButtonGroup
+                                id="rbgHeadWe"
+                                columns="2"
+                                width="12rem"
+                                select=".onWeChange"
+                                selectedIndex="{ path: 'checkout>/head/weExpectedIndex', type: 'sap.ui.model.type.Integer' }"
+                            >
+                                <buttons>
+                                    <RadioButton
+                                        id="rbHeadWeYes"
+                                        text="{i18n>common.yes}"
+                                    />
+                                    <RadioButton
+                                        id="rbHeadWeNo"
+                                        text="{i18n>common.no}"
+                                    />
+                                </buttons>
+                            </RadioButtonGroup>
+
+                            <Text
+                                id="txtHeadWeError"
+                                class="sapUiTinyMarginTop sapThemeNegativeText"
+                                text="{i18n>cw.err.weExpected}"
+                                visible="{= ${checkoutWizard>/validate} &amp;&amp; ( ${checkout>/head/weExpectedIndex} &lt; 0 ) }"
+                            />
+                        </VBox>
+
+                        <!-- Sigma-Fallgruppe -> nur Pflicht & sichtbar bei WE = Ja -->
+                        <VBox
+                            id="weBox"
+                            class="sapUiSmallMarginTop sapUiMediumMarginBegin"
+                            visible="{= ${checkout>/head/weExpectedIndex} === 0 }"
+                        >
+                            <HBox
+                                id="hboxSigmaLabel"
+                                alignItems="Center"
+                                wrap="Wrap"
+                            >
+                                <Label
+                                    id="l_sigma"
+                                    text="{i18n>cw.field.sigma}"
+                                    labelFor="cbSigma"
+                                    required="{= ${checkout>/head/weExpectedIndex} === 0 }"
+                                />
+                                <Button
+                                    id="btnInfoSigma"
+                                    type="Transparent"
+                                    icon="sap-icon://hint"
+                                    tooltip="{i18n>cw.info.tooltip}"
+                                    press=".onInfoPress"
+                                    class="sapUiTinyMarginBegin"
+                                >
+                                    <customData>
+                                        <core:CustomData
+                                            key="cwInfoKey"
+                                            value="sigma"
+                                        />
+                                    </customData>
+                                </Button>
+                            </HBox>
+
+                            <ComboBox
+                                id="cbSigma"
+                                width="16rem"
+                                selectedKey="{checkout>/head/sigma}"
+                                items="{ path: '/ZmmWebsShSigmaSet' }"
+                            >
+                                <core:Item
+                                    id="sigmanr"
+                                    key="{DomvalueL}"
+                                    text="{= ${DomvalueL} + ' - ' + ${Ddtext} }"
+                                />
+                            </ComboBox>
+                        </VBox>
+
+                        <!-- Amtsvertragsbezug -> nur Pflicht & sichtbar bei WE = Ja -->
+                        <VBox
+                            id="boxVAvb"
+                            class="sapUiSmallMarginTop sapUiMediumMarginBegin"
+                            wrap="Wrap"
+                            visible="{= ${checkout>/head/weExpectedIndex} === 0 }"
+                        >
+                            <Label
+                                id="lblAvb"
+                                text="{i18n>cw.field.avbRef}"
+                                required="{= ${checkout>/head/weExpectedIndex} === 0 }"
+                            />
+                            <RadioButtonGroup
+                                id="btnAvb"
+                                columns="2"
+                                selectedIndex="{ path: 'checkout>/head/AmtsvertragsbezugIndex', type: 'sap.ui.model.type.Integer' }"
+                            >
+                                <buttons>
+                                    <RadioButton
+                                        id="rbHeadWeYes2"
+                                        text="{i18n>common.yes}"
+                                    />
+                                    <RadioButton
+                                        id="rbHeadWeNo2"
+                                        text="{i18n>common.no}"
+                                    />
+                                </buttons>
+                            </RadioButtonGroup>
+                        </VBox>
+
+                        <VBox
+                            id="boxVAvbTxt"
+                            class="sapUiSmallMarginTop sapUiLargeMarginBegin"
+                            visible="{= ${checkout>/head/weExpectedIndex} === 0 &amp;&amp; ${checkout>/head/AmtsvertragsbezugIndex} === 0 }"
+                        >
+                            <Label
+                                id="lblAvbTxt"
+                                text="{i18n>cw.field.avbNumber}"
+                                required="{= ${checkout>/head/weExpectedIndex} === 0 &amp;&amp; ${checkout>/head/AmtsvertragsbezugIndex} === 0 }"
+                            />
+                            <Input
+                                id="inpAvb"
+                                width="12rem"
+                                value="{checkout>/head/avbNumber}"
+                            />
+                        </VBox>
+
+                        <!-- Bestellart (immer Pflicht) -->
+                        <VBox
+                            id="boxVBestellart"
+                            class="sapUiSmallMarginTop sapUiMediumMarginEnd"
+                        >
+                            <Label
+                                id="l_bestellart"
+                                text="{i18n>cw.field.orderType}"
+                                required="true"
+                            />
+                            <RadioButtonGroup
+                                id="bestellart"
+                                columns="2"
+                                selectedIndex="{ path: 'checkout>/head/materialTypeIndex', type: 'sap.ui.model.type.Integer' }"
+                            >
+                                <buttons>
+                                    <RadioButton
+                                        id="verbrauch"
+                                        text="{i18n>cw.orderType.consumption}"
+                                    />
+                                    <RadioButton
+                                        id="investition"
+                                        text="{i18n>cw.orderType.investment}"
+                                    />
+                                </buttons>
+                            </RadioButtonGroup>
+                        </VBox>
+
+                        <!-- Kostenstelle -> nur Pflicht & sichtbar bei Investition -->
+                        <VBox
+                            id="ZKostl"
+                            class="sapUiSmallMarginTop sapUiMediumMarginBegin"
+                            visible="{= ${checkout>/head/materialTypeIndex} === 1 }"
+                        >
+                            <Label
+                                id="lblKostl"
+                                text="{i18n>cw.field.costCenter}"
+                                required="{= ${checkout>/head/materialTypeIndex} === 1 }"
+                            />
+                            <Input
+                                id="inpZKostl"
+                                width="12rem"
+                                value="{checkout>/costCenter}"
+                                showValueHelp="true"
+                                valueHelpRequest=".onValueHelpKostl"
+                            />
+                        </VBox>
+
+                        <!-- Kontierungstyp -> nur Pflicht & sichtbar bei Verbrauch -->
+                        <HBox
+                            id="ZKon"
+                            binding="{ path: 'cartProducts>/cartEntries/0' }"
+                            class="sapUiSmallMarginTop sapUiMediumMarginBegin"
+                            wrap="Wrap"
+                            alignItems="End"
+                            visible="{= ${checkout>/head/materialTypeIndex} === 0 }"
+                        >
+                            <VBox
+                                id="colType"
+                                class="sapUiSmallMarginEnd"
+                            >
+                                <Label
+                                    id="lblType"
+                                    text="{i18n>cw.field.accountType}"
+                                    required="{= ${checkout>/head/materialTypeIndex} === 0 }"
+                                />
+                                <Select
+                                    id="selType"
+                                    width="12rem"
+                                    selectedKey="{cartProducts>accountType}"
+                                    forceSelection="false"
+                                    change=".onAccountTypeChange"
+                                    valueState="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>accountType} ? 'Error' : 'None' }"
+                                    valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>accountType} ? ${i18n>cw.err.accountType} : '' }"
+                                >
+                                    <core:Item
+                                        id="itemKonGl"
+                                        key="gl"
+                                        text="{i18n>cw.accountType.gl}"
+                                    />
+                                    <core:Item
+                                        id="itemKonIO"
+                                        key="io"
+                                        text="{i18n>cw.accountType.io}"
+                                    />
+                                    <core:Item
+                                        id="itemKonPSP"
+                                        key="wbs"
+                                        text="{i18n>cw.accountType.wbs}"
+                                    />
+                                </Select>
+                            </VBox>
+
+                            <VBox
+                                id="colKostl"
+                                class="sapUiSmallMarginEnd"
+                                visible="{= ${cartProducts>accountType} === 'gl' }"
+                            >
+                                <Label
+                                    id="lblKonKostl"
+                                    text="{i18n>cw.field.costCenter}"
+                                    required="true"
+                                />
+                                <Input
+                                    id="inpKostl"
+                                    width="12rem"
+                                    value="{cartProducts>costCenter}"
+                                    valueState="{= ${checkoutWizard>/validate} &amp;&amp; ${cartProducts>accountType} === 'gl' &amp;&amp; !${cartProducts>costCenter} ? 'Error' : 'None' }"
+                                    valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; ${cartProducts>accountType} === 'gl' &amp;&amp; !${cartProducts>costCenter} ? ${i18n>cw.err.costCenter} : '' }"
+                                    showValueHelp="true"
+                                    valueHelpRequest=".onValueHelpKostl"
+                                />
+                            </VBox>
+
+                            <VBox
+                                id="colIa"
+                                class="sapUiSmallMarginEnd"
+                                visible="{= ${cartProducts>accountType} === 'io' }"
+                            >
+                                <Label
+                                    id="lblKonIO"
+                                    text="{i18n>cw.field.internalOrder}"
+                                    required="true"
+                                />
+                                <Input
+                                    id="inpIa"
+                                    width="12rem"
+                                    value="{cartProducts>internalOrder}"
+                                    valueState="{= ${checkoutWizard>/validate} &amp;&amp; ${cartProducts>accountType} === 'io' &amp;&amp; !${cartProducts>internalOrder} ? 'Error' : 'None' }"
+                                    valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; ${cartProducts>accountType} === 'io' &amp;&amp; !${cartProducts>internalOrder} ? ${i18n>cw.err.internalOrder} : '' }"
+                                />
+                            </VBox>
+
+                            <VBox
+                                id="colWbs"
+                                class="sapUiSmallMarginEnd"
+                                visible="{= ${cartProducts>accountType} === 'wbs' }"
+                            >
+                                <Label
+                                    id="lblKonWBS"
+                                    text="{i18n>cw.field.wbs}"
+                                    required="true"
+                                />
+                                <Input
+                                    id="inpWBS"
+                                    width="12rem"
+                                    value="{cartProducts>accountValue}"
+                                    showValueHelp="true"
+                                    valueHelpRequest=".onValueHelpWbs"
+                                    valueState="{= ${checkoutWizard>/validate} &amp;&amp; ${cartProducts>accountType} === 'wbs' &amp;&amp; !${cartProducts>accountValue} ? 'Error' : 'None' }"
+                                    valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; ${cartProducts>accountType} === 'wbs' &amp;&amp; !${cartProducts>accountValue} ? ${i18n>cw.err.wbs} : '' }"
+                                />
+                            </VBox>
+                        </HBox>
+
+                        <HBox
+                            id="boxHKlass"
+                            class="sapUiSmallMarginTop"
+                            wrap="Wrap"
+                            alignItems="End"
+                        >
+                            <VBox
+                                id="boxVKlass"
+                                class="sapUiSmallMarginEnd"
+                            >
+                                <HBox
+                                    id="hboxKlassLabel"
+                                    alignItems="Center"
+                                    wrap="Wrap"
+                                >
+                                    <Label
+                                        id="lblKlass"
+                                        text="{i18n>cw.field.classification}"
+                                        labelFor="cbKlassifizierung"
+                                        required="true"
+                                    />
+                                    <Button
+                                        id="btnInfoKlass"
+                                        type="Transparent"
+                                        icon="sap-icon://hint"
+                                        tooltip="{i18n>cw.info.tooltip}"
+                                        press=".onInfoPress"
+                                        class="sapUiTinyMarginBegin"
+                                    >
+                                        <customData>
+                                            <core:CustomData
+                                                key="cwInfoKey"
+                                                value="klass"
+                                            />
+                                        </customData>
+                                    </Button>
+                                </HBox>
+
+                                <MultiComboBox
+                                    id="cbKlassifizierung"
+                                    width="16rem"
+                                    selectedKeys="{checkout>/head/klass}"
+                                    items="{ path: '/ZmmWebsShKlassSet' }"
+                                    selectionFinish=".onKlassSelectionFinish"
+                                    valueState="{= ${checkoutWizard>/validate} &amp;&amp; (!${checkout>/head/klass} || ${checkout>/head/klass}.length === 0) ? 'Error' : 'None' }"
+                                    valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; (!${checkout>/head/klass} || ${checkout>/head/klass}.length === 0) ? ${i18n>cw.err.classification} : '' }"
+                                >
+                                    <core:Item
+                                        id="klassifizierung"
+                                        key="{Kuerzel}"
+                                        text="{= ${Kuerzel} + ' - ' + ${Name} }"
+                                    />
+                                </MultiComboBox>
+                            </VBox>
+
+                            <VBox
+                                id="boxVInvArt"
+                                class="sapUiSmallMarginEnd"
+                            >
+                                <Label
+                                    id="lblInvArt"
+                                    text="{i18n>cw.field.invArt}"
+                                    labelFor="cbInvArt"
+                                    required="true"
+                                />
+                                <ComboBox
+                                    id="cbInvArt"
+                                    width="16rem"
+                                    selectedKey="{checkout>/head/invArt}"
+                                    items="{ path: '/ZmmWebsShInvartSet' }"
+                                    change=".onInvArtChange"
+                                    valueState="{= ${checkoutWizard>/validate} &amp;&amp; !${checkout>/head/invArt} ? 'Error' : 'None' }"
+                                    valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; !${checkout>/head/invArt} ? ${i18n>cw.invArt.mandatory} : '' }"
+                                >
+                                    <core:Item
+                                        id="investmentartt"
+                                        key="{Kuerzel}"
+                                        text="{= ${Kuerzel} + ' - ' + ${Name} }"
+                                    />
+                                </ComboBox>
+                            </VBox>
+                            <VBox id="boxVWerk">
+                                <Label
+                                    id="lvlWerk"
+                                    text="{i18n>cw.field.plantDelivery}"
+                                    labelFor="cbWerks"
+                                    required="true"
+                                />
+
+                                <ComboBox
+                                    id="cbWerks"
+                                    width="16rem"
+                                    selectedKey="{checkout>/head/werks}"
+                                    items="{
+            path: '/MdgBsMatWerksElemSet'
+        }"
+                                >
+                                    <core:Item
+                                        id="werk"
+                                        key="{Werks}"
+                                        text="{Werks} {VtextWerks}"
+                                    />
+                                </ComboBox>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Energierelevant -->
+                        <HBox
+                            id="boxVEnergie"
+                            class="sapUiSmallMarginTop"
+                            wrap="Wrap"
+                            alignItems="End"
+                        >
+                            <!-- Nachhaltigkeit -->
+                            <VBox
+                                id="boxVUmwelt"
+                                class="sapUiMediumMarginEnd"
+                            >
+                                <Label
+                                    id="lvlUmwelt"
+                                    text="{i18n>cw.field.sustainability}"
+                                    required="true"
+                                />
+                                <RadioButtonGroup
+                                    id="rbgUmwelt"
+                                    columns="2"
+                                    selectedIndex="{ path: 'checkout>/head/UmweltIndex', type: 'sap.ui.model.type.Integer' }"
+                                >
+                                    <buttons>
+                                        <RadioButton
+                                            id="rbHeadWeYes3"
+                                            text="{i18n>common.yes}"
+                                        />
+                                        <RadioButton
+                                            id="rbHeadWeNo3"
+                                            text="{i18n>common.no}"
+                                        />
+                                    </buttons>
+                                </RadioButtonGroup>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+                </WizardStep>
+
+                <!-- ======================================================
+    STEP 2 – KONTIERUNG
+======================================================= -->
+                <WizardStep
+                    id="stepForm"
+                    title="{i18n>cw.step.form.title}"
+                    icon="sap-icon://add-document"
+                >
+                    <VBox
+                        id="formVBox"
+                        class="sapUiSmallMargin sapUiMediumMarginBeginEnd"
+                        width="100%"
+                    >
+                        <HBox
+                            id="boxHIntNotiz"
+                            alignItems="End"
+                            wrap="Wrap"
+                        >
+                            <VBox id="boxVIntNotiz">
+                                <Label
+                                    id="lvlIntNotiz"
+                                    text="{i18n>cw.field.internalNote}"
+                                    labelFor="taNote"
+                                />
+                                <TextArea
+                                    id="taNote"
+                                    width="28rem"
+                                    rows="4"
+                                    value="{checkout>/note}"
+                                    placeholder="{i18n>cw.placeholder.internalNote}"
+                                />
+                            </VBox>
+
+                            <u:FileUploader
+                                id="fuAttach"
+                                class="sapUiSmallMarginBegin sapUiSmallMarginTop"
+                                buttonOnly="true"
+                                buttonText="{i18n>cw.upload.addAttachments}"
+                                multiple="true"
+                                sameFilenameAllowed="true"
+                                maximumFileSize="15"
+                                fileType="pdf,doc,docx,xls,xlsx,png,jpg,jpeg"
+                                change=".onAttachFUChange"
+                            />
+                        </HBox>
+
+                        <List
+                            id="lstAttachments"
+                            class="sapUiSmallMarginTop"
+                            items="{checkout>/attachments}"
+                            mode="Delete"
+                            delete=".onAttachDelete"
+                            noDataText="{i18n>cw.upload.noAttachments}"
+                        >
+                            <items>
+                                <ObjectListItem
+                                    id="oliAttach"
+                                    title="{checkout>fileName}"
+                                    number="{= ${checkout>size} ? Math.round(${checkout>size} / 1024) + ' KB' : '' }"
+                                    numberUnit=""
+                                    type="Active"
+                                    press=".onAttachOpen"
+                                >
+                                    <attributes>
+                                        <ObjectAttribute
+                                            id="oaAttach"
+                                            text="{checkout>mediaType}"
+                                        />
+                                    </attributes>
+                                </ObjectListItem>
+                            </items>
+                        </List>
+                    </VBox>
+                </WizardStep>
+
+                <!-- ======================================================
+             STEP 3 – ARTIKEL
+======================================================= -->
+                <WizardStep
+                    id="stepCart"
+                    title="{i18n>checkoutStepCartTitle}"
+                    icon="sap-icon://cart"
+                >
+                    <VBox
+                        id="cartVBox"
+                        class="sapUiSmallMargin"
+                    >
+                        <List
+                            id="wizardCartList"
+                            items="{cartProducts>/cartEntries}"
+                            noDataText="{i18n>cartNoData}"
+                        >
+                            <items>
+                                <CustomListItem id="cliCartRow">
+                                    <HBox
+                                        id="rowHBox"
+                                        class="sapUiSmallMargin"
+                                        alignItems="Start"
+                                    >
+                                        <Image
+                                            id="imgProduct"
+                                            src="{
+  parts: [
+    { path: 'cartProducts>ZmmWebsArtikelId' },
+    { path: 'cartProducts>ZmmWebsDocId' }
+  ],
+  formatter: '.formatter.categoryThumbIconFromDocId'
+}"
+                                            width="4rem"
+                                            height="4rem"
+                                            densityAware="false"
+                                            class="sapUiSmallMarginEnd"
+                                        />
+
+                                        <VBox id="rightVBox">
+                                            <Text
+                                                id="txtTitle"
+                                                text="{cartProducts>ZmmWebsArtBez}"
+                                            />
+                                            <Text
+                                                id="txtQty"
+                                                text="{= (${cartProducts>MENGE} || 0) + ' ' + (${cartProducts>Meins} || '') }"
+                                            />
+                                            <ObjectNumber
+                                                id="objPrice"
+                                                number="{ path: 'cartProducts>Bapre', formatter: '.formatter.price' }"
+                                                unit="{cartProducts>Waers}"
+                                            />
+
+                                            <HBox
+                                                id="lineAll"
+                                                class="sapUiSmallMarginTop"
+                                                alignItems="End"
+                                                wrap="Wrap"
+                                            >
+                                                <VBox
+                                                    id="colReceiver"
+                                                    class="sapUiSmallMarginEnd"
+                                                >
+                                                    <Label
+                                                        id="lblReceiver"
+                                                        text="{i18n>cw.field.receiverGoods}"
+                                                        required="true"
+                                                    />
+                                                    <Input
+                                                        id="inpReceiver"
+                                                        width="12rem"
+                                                        value="{cartProducts>receiver}"
+                                                        valueState="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>receiver} ? 'Error' : 'None' }"
+                                                        valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>receiver} ? ${i18n>cw.err.receiver} : '' }"
+                                                        showValueHelp="true"
+                                                        valueHelpRequest=".onValueHelpUser"
+                                                    />
+                                                </VBox>
+
+                                                <VBox
+                                                    id="colMatkl"
+                                                    class="sapUiSmallMarginEnd"
+                                                >
+                                                    <Label
+                                                        id="lblMatkl"
+                                                        text="{i18n>cw.field.matkl}"
+                                                        required="true"
+                                                    />
+                                                    <Input
+                                                        id="inpMatkl"
+                                                        width="12rem"
+                                                        value="{cartProducts>Matkl}"
+                                                        showValueHelp="true"
+                                                        valueHelpRequest=".onValueHelpMatkl"
+                                                        valueState="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>Matkl} ? 'Error' : 'None' }"
+                                                        valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>Matkl} ? ${i18n>cw.err.matkl} : '' }"
+                                                    />
+                                                </VBox>
+
+                                                <VBox
+                                                    id="colDesiredDate"
+                                                    class="sapUiSmallMarginEnd"
+                                                >
+                                                    <Label
+                                                        id="lblDesiredDate"
+                                                        text="{i18n>cw.field.desiredDate}"
+                                                        labelFor="dpDesiredDate"
+                                                    />
+                                                    <DatePicker
+                                                        id="dpDesiredDate"
+                                                        width="12rem"
+                                                        dateValue="{cartProducts>desiredDate}"
+                                                        displayFormat="long"
+                                                    />
+                                                </VBox>
+
+                                                <VBox
+                                                    id="colGlPos"
+                                                    class="sapUiSmallMarginEnd"
+                                                >
+                                                    <Label
+                                                        id="lblGlPos"
+                                                        text="{i18n>cw.field.glAccount}"
+                                                        required="true"
+                                                    />
+                                                    <Input
+                                                        id="inpGL"
+                                                        width="12rem"
+                                                        value="{cartProducts>glAccount}"
+                                                        showValueHelp="true"
+                                                        valueHelpRequest=".onValueHelpGl"
+                                                        valueState="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>glAccount} ? 'Error' : 'None' }"
+                                                        valueStateText="{= ${checkoutWizard>/validate} &amp;&amp; !${cartProducts>glAccount} ? ${i18n>cw.err.glAccount} : '' }"
+                                                    />
+                                                </VBox>
+                                            </HBox>
+                                        </VBox>
+                                    </HBox>
+                                </CustomListItem>
+                            </items>
+                        </List>
+
+                        <Text
+                            id="wizardTotal"
+                            class="sapUiSmallMarginTop"
+                            text="{ path: 'cartProducts>/cartEntries', formatter: '.formatter.totalPrice' }"
+                        />
+                    </VBox>
+                </WizardStep>
+            </Wizard>
+
+            <ResponsivePopover
+                id="infoPopover"
+                placement="Bottom"
+                showHeader="false"
+            >
+                <content>
+                    <VBox
+                        id="infoPopoverVBox"
+                        class="sapUiSmallMargin"
+                        width="22rem"
+                    >
+                        <Text
+                            id="infoPopoverText1"
+                            text="{info>/text1}"
+                        />
+                    </VBox>
+                </content>
+            </ResponsivePopover>
+        </content>
+
+        <footer>
+            <OverflowToolbar id="checkoutFooterBar">
+                <ToolbarSpacer id="tbsCheckOut" />
+
+                <Button
+                    id="btnToStep2"
+                    text="{i18n>cw.btn.step2}"
+                    type="Emphasized"
+                    press=".onContinueFromHead"
+                    visible="{path: 'checkoutWizard>/currentStep', formatter: '.formatter.isStepHead'}"
+                />
+
+                <Button
+                    id="btnToStep3"
+                    text="{i18n>cw.btn.step3}"
+                    type="Emphasized"
+                    press=".onContinueFromForm"
+                    visible="{path: 'checkoutWizard>/currentStep', formatter: '.formatter.isStepForm'}"
+                />
+
+                <Button
+                    id="btnOrder"
+                    text="{i18n>cw.btn.order}"
+                    type="Emphasized"
+                    press=".onSubmitOrder"
+                    visible="{path: 'checkoutWizard>/currentStep', formatter: '.formatter.isStepCart'}"
+                />
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

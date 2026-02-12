@@ -1,0 +1,2 @@
+sap.ui.define(["./BaseController","sap/ui/core/UIComponent"],function(e,o){"use strict";return e.extend("diehlwebshop.controller.NotFound",{onInit:function(){this._router=o.getRouterFor(this)}})});
+//# sourceMappingURL=NotFound.controller.js.map

@@ -1,0 +1,2 @@
+sap.ui.define(["./BaseController"],function(e){"use strict";return e.extend("diehlwebshop.controller.PurchaseRequestDetail",{onInit:function(){console.log("✅ PurchaseRequestDetail-Controller geladen.")}})});
+//# sourceMappingURL=PurchaseRequestDetail.controller.js.map

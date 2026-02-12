@@ -1,0 +1,13 @@
+<mvc:View
+	controllerName="diehlwebshop.controller.NotFound"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc">
+	<Page
+        id="notFoundPage"
+		title="{cfg>/pageTitle}"
+		backgroundDesign="Solid"
+		showNavButton="{appView>/smallScreenMode}"
+		navButtonPress=".onBack"
+		showFooter="true">
+    </Page>
+</mvc:View>

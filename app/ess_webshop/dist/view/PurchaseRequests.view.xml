@@ -1,0 +1,169 @@
+<mvc:View
+    controllerName="diehlwebshop.controller.PurchaseRequests"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smartTable="sap.ui.comp.smarttable"
+    xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+>
+    <Page
+        id="purchaseRequestsPage"
+        title="{i18n>purchaseRequestPageTitle}"
+        showNavButton="false"
+        showHeader="true"
+    >
+        <customHeader>
+            <Bar id="purchaseRequestsBar">
+                <contentLeft>
+                    <Title
+                        id="purchaseRequestsTitle"
+                        text="{i18n>purchaseRequestPageTitle}"
+                    />
+                </contentLeft>
+                <contentRight>
+                    <Button
+                        id="toggleCartButton"
+                        icon="sap-icon://cart"
+                        type="Transparent"
+                        press="onCartButtonPress"
+                        tooltip="{i18n>toggleCartButtonTooltip}"
+                    />
+                </contentRight>
+            </Bar>
+        </customHeader>
+
+        <content>
+            <smartFilterBar:SmartFilterBar
+                id="prFilterBar"
+                entitySet="BanfSet"
+                useToolbar="true"
+                showGoOnFB="true"
+                showClearOnFB="true"
+                persistencyKey="PR_SFB"
+                liveMode="true"
+            >
+                <smartFilterBar:controlConfiguration>
+                    <smartFilterBar:ControlConfiguration
+                        id="ccBanfn"
+                        key="Banfn"
+                        label="{i18n>pr.filter.banfn}"
+                        index="10"
+                        visible="true"
+                    />
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccTxz01"
+                        key="Txz01"
+                        label="{i18n>pr.filter.txz01}"
+                        index="20"
+                        visible="true"
+                    />
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccBstnr"
+                        key="Bstnr"
+                        label="{i18n>pr.filter.bstnr}"
+                        index="30"
+                        visibleInAdvancedArea="true"
+                    />
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccFrgkz"
+                        key="Frgkz"
+                        label="{i18n>pr.filter.frgkz}"
+                        index="40"
+                        visibleInAdvancedArea="true"
+                    />
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccStatusWe"
+                        key="ZmmWebsStatusWe"
+                        label="{i18n>pr.filter.statusWe}"
+                        index="50"
+                        visibleInAdvancedArea="true"
+                    >
+                        <smartFilterBar:customControl>
+                            <Input
+                                id="sfbStatusWe"
+                                showValueHelp="true"
+                                valueHelpRequest=".onValueHelpStatusWe"
+                                width="100%"
+                            />
+                        </smartFilterBar:customControl>
+                    </smartFilterBar:ControlConfiguration>
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccLifnr"
+                        key="Lifnr"
+                        label="{i18n>pr.filter.lifnr}"
+                        index="60"
+                        visibleInAdvancedArea="true"
+                    >
+                        <smartFilterBar:customControl>
+                            <Input
+                                id="sfbSupplier"
+                                showValueHelp="true"
+                                valueHelpRequest=".onValueHelpSupplier"
+                                width="100%"
+                            />
+                        </smartFilterBar:customControl>
+                    </smartFilterBar:ControlConfiguration>
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccEindt"
+                        key="Eindt"
+                        label="{i18n>pr.filter.eindt}"
+                        index="70"
+                        visibleInAdvancedArea="true"
+                    />
+
+                    <smartFilterBar:ControlConfiguration
+                        id="ccWaers"
+                        key="Waers"
+                        label="{i18n>pr.filter.waers}"
+                        index="80"
+                        visibleInAdvancedArea="true"
+                    >
+                        <smartFilterBar:customControl>
+                            <Input
+                                id="sfbCurrency"
+                                showValueHelp="true"
+                                valueHelpRequest=".onValueHelpCurrency"
+                                width="100%"
+                            />
+                        </smartFilterBar:customControl>
+                    </smartFilterBar:ControlConfiguration>
+                </smartFilterBar:controlConfiguration>
+            </smartFilterBar:SmartFilterBar>
+
+            <smartTable:SmartTable
+                id="banfSmartTable"
+                smartFilterId="prFilterBar"
+                tableType="ResponsiveTable"
+                entitySet="BanfSet"
+                header="{i18n>purchaseRequestPageTitle}"
+                useExportToExcel="true"
+                useVariantManagement="true"
+                useTablePersonalisation="true"
+                editable="false"
+                enableAutoBinding="true"
+                initiallyVisibleFields="Banfn,Bnfpo,Txz01,Bapre,Waers,Frgkz,Bstnr,Bstpo,Eindt,ZmmWebsStatusWe,ZmmWebsStatusWeBez,Lifnr"
+            >
+                <smartTable:customToolbar>
+                    <Toolbar id="prSmartTableToolbar">
+                        <ToolbarSpacer id="prSmartTableSpacer" />
+                        <Button
+                            id="btnReAdd"
+                            text="{i18n>reAddToCart}"
+                            icon="sap-icon://cart-3"
+                            type="Emphasized"
+                            enabled="false"
+                            press=".onReAddSelected"
+                        />
+                    </Toolbar>
+                </smartTable:customToolbar>
+            </smartTable:SmartTable>
+        </content>
+    </Page>
+</mvc:View>
+

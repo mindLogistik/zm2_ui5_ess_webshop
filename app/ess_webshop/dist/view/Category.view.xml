@@ -1,0 +1,110 @@
+<mvc:View
+    controllerName="diehlwebshop.controller.Category"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+>
+    <Page
+        id="categoryPage"
+        title="{= ${view>/categoryTitle} || ${i18n>Category_title} }"
+        backgroundDesign="Solid"
+        showNavButton="true"
+        navButtonPress=".onBack"
+    >
+        <landmarkInfo>
+            <PageAccessibleLandmarkInfo
+                id="regionCategoryPage"
+                rootRole="Region"
+                rootLabel="{i18n>Category_rootLabel}"
+                contentRole="Main"
+                contentLabel="{i18n>Category_contentLabel}"
+                footerRole="Region"
+                footerLabel="{i18n>Category_footerLabel}"
+                headerRole="Region"
+                headerLabel="{i18n>Category_headerLabel}"
+            />
+        </landmarkInfo>
+
+        <headerContent>
+            <Button
+                id="masterListFilterButton"
+                icon="sap-icon://filter"
+                press=".onFilter"
+                tooltip="{i18n>filterButtonTooltip}"
+            />
+        </headerContent>
+
+        <content>
+            <SearchField
+                id="categorySearchField"
+                placeholder="{i18n>Suche}"
+                liveChange=".onCategorySearch"
+            />
+
+            <List
+                id="productListCategory"
+                growing="true"
+                mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
+                selectionChange=".onProductDetails"
+                noDataText="{i18n>categoryNoData}"
+                busyIndicatorDelay="0"
+            >
+                <infoToolbar>
+                    <Toolbar
+                        id="categoryInfoToolbar"
+                        visible="true"
+                    >
+                        <content>
+                            <Title
+                                id="categoryInfoToolbarTitle"
+                                text="{view>/categoryTitle}"
+                            />
+                        </content>
+                    </Toolbar>
+                </infoToolbar>
+
+                <items>
+                    <ObjectListItem
+                        id="bildUrlCategoryPage"
+                        type="Active"
+                        press=".onProductDetails"
+                        icon="{
+        parts: [
+            { path: 'ZmmWebsArtikelId' },
+            { path: 'ZmmWebsDocId' }
+        ],
+        formatter: '.formatter.categoryThumbIconFromDocId'
+    }"
+                        iconDensityAware="false"
+                        title="{ZmmWebsArtBez}"
+                        number="{
+        path: 'Bapre',
+        formatter: '.formatter.price'
+    }"
+                        numberUnit="{Waers}"
+                        tooltip="{i18n>openProductDetails} {ZmmWebsArtikelId}"
+                    >
+                        <attributes>
+                            <ObjectAttribute
+                                id="lieferantProductPage"
+                                text="{= 'Lieferant: ' + (${Wlief} || '') }"
+                            />
+                        </attributes>
+
+                        <firstStatus>
+                            <!-- ALT -->
+                            <!-- text="{ path: 'Status', formatter: '.formatter.statusText' }"
+             state="{ path: 'Status', formatter: '.formatter.statusState' }" -->
+
+                            <!-- NEU: Backend-Property-Namen (STATUS) -->
+                            <ObjectStatus
+                                id="statusProductPage"
+                                text="{ path: 'STATUS', formatter: '.formatter.statusText' }"
+                                state="{ path: 'STATUS', formatter: '.formatter.statusState' }"
+                            />
+                        </firstStatus>
+                    </ObjectListItem>
+                </items>
+            </List>
+        </content>
+    </Page>
+</mvc:View>

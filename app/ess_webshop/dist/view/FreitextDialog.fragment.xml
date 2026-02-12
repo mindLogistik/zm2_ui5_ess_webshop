@@ -1,0 +1,129 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="freitextDialog"
+        title="{i18n>freitext.dialog.title}"
+        draggable="true"
+        resizable="true"
+        contentWidth="34rem"
+    >
+        <VBox
+            id="freitextVBox"
+            class="sapUiSmallMargin"
+        >
+            <Input
+                id="freitextInputDescription"
+                placeholder="{i18n>freitext.field.descriptionRequired}"
+                required="true"
+            />
+
+            <TextArea
+                id="freitextInputAddText"
+                placeholder="{i18n>freitext.field.addText}"
+                rows="3"
+                growing="true"
+            />
+
+            <Input
+                id="freitextInputRequester"
+                placeholder="{i18n>freitext.field.requesterRequired}"
+                required="true"
+                showValueHelp="true"
+                valueHelpRequest=".onValueHelpUser"
+            />
+
+
+            <!-- neu: Lieferant + Einkäufergruppe in einer Zeile -->
+            <HBox
+                id="freitextHBoxSupplierEkgrp"
+                renderType="Bare"
+                justifyContent="SpaceBetween"
+            >
+                <Input
+                    id="freitextInputSupplier"
+                    width="48%"
+                    placeholder="{i18n>freitext.field.supplier}"
+                    showValueHelp="true"
+                    valueHelpRequest=".onValueHelpSupplier"
+                />
+
+                <Input
+                    id="freitextInputEkgrp"
+                    width="48%"
+                    placeholder="{i18n>freitext.field.ekgrp}"
+                    showValueHelp="true"
+                    valueHelpRequest=".onValueHelpEkgrp"
+                />
+            </HBox>
+
+            <Input
+                id="freitextInputExtMatnr"
+                placeholder="{i18n>freitext.field.extMatnr}"
+                liveChange=".onExtMatnrLiveChange"
+                maxLength="35"
+            />
+
+            <HBox
+                id="freitextHBoxQtyUnit"
+                renderType="Bare"
+                justifyContent="SpaceBetween"
+            >
+                <Input
+                    id="freitextInputQuantity"
+                    width="48%"
+                    type="Number"
+                    placeholder="{i18n>freitext.field.quantityRequired}"
+                    required="true"
+                />
+                <Input
+                    id="freitextInputUnit"
+                    width="48%"
+                    value="ST"
+                    showValueHelp="true"
+                    valueHelpRequest=".onValueHelpUnit"
+                />
+            </HBox>
+
+            <HBox
+                id="freitextHBoxPriceCurr"
+                renderType="Bare"
+                justifyContent="SpaceBetween"
+            >
+                <Input
+                    id="freitextInputPrice"
+                    width="48%"
+                    type="Number"
+                    placeholder="{i18n>freitext.field.priceRequired}"
+                    required="true"
+                />
+                <Input
+                    id="freitextInputCurrency"
+                    width="48%"
+                    placeholder="{i18n>freitext.field.currency}"
+                    value="EUR"
+                    showValueHelp="true"
+                    valueHelpRequest=".onValueHelpCurrency"
+                />
+            </HBox>
+        </VBox>
+
+        <beginButton>
+            <Button
+                id="addFreitextButton"
+                type="Emphasized"
+                text="{i18n>freitext.btn.add}"
+                press=".onAddFreitextItem"
+            />
+        </beginButton>
+
+        <endButton>
+            <Button
+                id="cancelFreitextButton"
+                text="{i18n>freitext.btn.cancel}"
+                press=".onCloseFreitextDialog"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

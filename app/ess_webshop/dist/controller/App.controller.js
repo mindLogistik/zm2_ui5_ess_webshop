@@ -1,0 +1,2 @@
+sap.ui.define(["./BaseController"],function(e){"use strict";return e.extend("diehlwebshop.controller.App",{onInit:function(){var e=this.getOwnerComponent().getRouter();var t=this.getOwnerComponent().getModel("appView")}})});
+//# sourceMappingURL=App.controller.js.map

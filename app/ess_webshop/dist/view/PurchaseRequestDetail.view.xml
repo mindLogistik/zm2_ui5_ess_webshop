@@ -1,0 +1,10 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="diehlwebshop.controller.PurchaseRequestDetail">
+    <Page title="Details">
+        <content>
+            <Text text="Detailansicht wird hier gebaut." />
+        </content>
+    </Page>
+</mvc:View>

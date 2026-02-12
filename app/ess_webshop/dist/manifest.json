@@ -1,0 +1,283 @@
+{
+	"_version": "1.12.0",
+	"sap.app": {
+		"id": "diehlwebshop",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "0.0.1"
+		},
+		"crossNavigation": {
+			"inbounds": {
+				"webshop-display": {
+					"semanticObject": "webshop",
+					"action": "display",
+					"title": "Webshop",
+					"signature": {
+						"parameters": {}
+					},
+					"resolutionResult": {
+						"applicationType": "SAPUI5",
+						"additionalInformation": "SAPUI5.Component=diehlwebshop",
+						"url": "/diehlwebshop"
+					}
+				}
+			}
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"resources": "resources.json",
+		"sourceTemplate": {
+			"id": "@sap/generator-fiori:basic",
+			"version": "1.17.1",
+			"toolsId": "34bb3482-4ce5-4522-9140-42085b1bff1b"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/sap/ZMM_WEBS_U_SRV/",
+				"type": "OData",
+				"settings": {
+					"annotations": [],
+					"localUri": "localService/mainService/metadata.xml",
+					"odataVersion": "2.0"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": true,
+		"rootView": {
+			"viewName": "diehlwebshop.view.App",
+			"type": "XML",
+			"id": "app"
+		},
+		"dependencies": {
+			"minUI5Version": "1.71.75",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.f": {},
+				"sap.ui.comp": {},
+				"sap.ui.table": {},
+				"sap.ui.export": {},
+				"sap.ui.unified": {},
+				"sap.ui.layout": {},
+				"sap.uxap": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "diehlwebshop.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"useBatch": true,
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Inline",
+					"loadMetadataAsync": true
+				}
+			}
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.f.routing.Router",
+				"controlAggregation": "midColumnPages",
+				"controlId": "layout",
+				"transition": "slide",
+				"type": "View",
+				"viewType": "XML",
+				"path": "diehlwebshop.view",
+				"viewPath": "diehlwebshop.view",
+				"bypassed": {
+					"target": [
+						"home",
+						"notFound"
+					]
+				}
+			},
+			"routes": [
+				{
+					"name": "home",
+					"pattern": "",
+					"target": "home"
+				},
+				{
+					"name": "checkoutWizard",
+					"pattern": "checkoutWizard",
+					"target": [
+						"checkoutWizard"
+					]
+				},
+				{
+					"name": "categories",
+					"pattern": "categories",
+					"target": "home"
+				},
+				{
+					"name": "category",
+					"pattern": "category/{id}",
+					"target": "category",
+					"titleTarget": "category"
+				},
+				{
+					"name": "purchaseRequestsCart",
+					"pattern": "purchaseRequests/cart",
+					"target": [
+						"purchaseRequests",
+						"cart"
+					]
+				},
+				{
+					"name": "product",
+					"pattern": "category/{id}/product/{productId}",
+					"target": [
+						"category",
+						"product"
+					]
+				},
+				{
+					"pattern": "category/{id}/product/{productId}/cart",
+					"name": "productCart",
+					"target": [
+						"category",
+						"product",
+						"cart"
+					],
+					"titleTarget": "product"
+				},
+				{
+					"name": "purchaseRequests",
+					"pattern": "purchaseRequests",
+					"target": [
+						"home",
+						"purchaseRequests"
+					]
+				},
+				{
+					"name": "ociReturn",
+					"pattern": "ociReturn",
+					"target": [
+						"ociReturn"
+					]
+				},
+				{
+					"name": "purchaseRequestDetail",
+					"pattern": "purchaseRequests/{banfn}",
+					"target": [
+						"purchaseRequests",
+						"purchaseRequestDetail"
+					]
+				},
+				{
+					"pattern": "cart",
+					"name": "cart",
+					"target": [
+						"purchaseRequests",
+						"cart"
+					]
+				}
+			],
+			"targets": {
+				"home": {
+					"id": "homeView",
+					"name": "Home",
+					"controlAggregation": "beginColumnPages",
+					"level": 1,
+					"title": "{i18n>appTitle}"
+				},
+				"checkoutWizard": {
+					"id": "checkoutWizardView",
+					"name": "CheckoutWizard",
+					"controlAggregation": "midColumnPages",
+					"level": 2,
+					"title": "{i18n>checkoutTitle}"
+				},
+				"purchaseRequests": {
+					"id": "purchaseRequestsView",
+					"name": "PurchaseRequests",
+					"controlAggregation": "midColumnPages",
+					"level": 2,
+					"title": "Meine Bestellanforderungen"
+				},
+				"ociReturn": {
+					"id": "ociReturnView",
+					"name": "OciReturn",
+					"controlAggregation": "midColumnPages",
+					"level": 2,
+					"title": "OCI Rückgabe"
+				},
+				"purchaseRequestDetail": {
+					"id": "purchaseRequestDetailView",
+					"name": "PurchaseRequestDetail",
+					"controlAggregation": "endColumnPages",
+					"level": 3,
+					"title": "Details"
+				},
+				"product": {
+					"id": "product",
+					"name": "Product",
+					"controlAggregation": "midColumnPages",
+					"level": 3,
+					"title": "{ZmmWebsArtBez}"
+				},
+				"category": {
+					"id": "category",
+					"name": "Category",
+					"controlAggregation": "beginColumnPages",
+					"level": 2,
+					"viewPath": "diehlwebshop.view",
+					"title": {
+						"parts": [
+							"i18n>tabTitle",
+							"Kategorieid"
+						]
+					}
+				},
+				"notFound": {
+					"id": "notFoundView",
+					"name": "NotFound",
+					"controlAggregation": "midColumnPages",
+					"level": 3,
+					"title": "{i18n>categoryNoData}"
+				},
+				"cart": {
+					"name": "Cart",
+					"controlAggregation": "endColumnPages",
+					"id": "cartView",
+					"title": {
+						"parts": [
+							"i18n>tabTitle",
+							"i18n>tableTitleCart"
+						]
+					}
+				}
+			}
+		},
+		"flexBundle": false
+	}
+}
